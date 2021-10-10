@@ -30,30 +30,223 @@
     gcloud auth login – запускает браузер, получает токен для дальнейшей работы. 
   - ``gcloud compute ssh pg-01 ``
 
-***
-    поставить PostgreSQL
-    зайти вторым ssh (вторая сессия)
-    запустить везде psql из под пользователя postgres
-    выключить auto commit
-    сделать в первой сессии новую таблицу и наполнить ее данными create table persons(id serial, first_name text, second_name text); insert into persons(first_name, second_name) values('ivan', 'ivanov'); insert into persons(first_name, second_name) values('petr', 'petrov'); commit;
-    посмотреть текущий уровень изоляции: show transaction isolation level
-    начать новую транзакцию в обоих сессиях с дефолтным (не меняя) уровнем изоляции
-    в первой сессии добавить новую запись insert into persons(first_name, second_name) values('sergey', 'sergeev');
-    сделать select * from persons во второй сессии
-    видите ли вы новую запись и если да то почему?
-    завершить первую транзакцию - commit;
-    сделать select * from persons во второй сессии
-    видите ли вы новую запись и если да то почему?
-    завершите транзакцию во второй сессии
-    начать новые но уже repeatable read транзации - set transaction isolation level repeatable read;
-    в первой сессии добавить новую запись insert into persons(first_name, second_name) values('sveta', 'svetova');
-    сделать select * from persons во второй сессии
-    видите ли вы новую запись и если да то почему?
-    завершить первую транзакцию - commit;
-    сделать select * from persons во второй сессии
-    видите ли вы новую запись и если да то почему?
-    завершить вторую транзакцию
-    сделать select * from persons во второй сессии
-    видите ли вы новую запись и если да то почему?
-    остановите виртуальную машину но не удаляйте ее
-    
+
+7. поставить PostgreSQL
+    -  установка
+
+```
+sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
+wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
+DEBIAN_FRONTEND=noninteractive sudo apt -y install postgresql-14 
+```
+
+    -  убедимся что сервис работает:
+
+```
+root@pg-01:~# pg_lsclusters 
+Ver Cluster Port Status Owner    Data directory              Log file
+14  main    5432 online postgres /var/lib/postgresql/14/main /var/log/postgresql/postgresql-14-main.log
+```
+
+    - gcloud compute ssh pg-01 
+ - запустить везде psql из под пользователя postgres
+ - выключить auto commit
+
+    test=# \echo :AUTOCOMMIT
+    on
+    test=# \set AUTOCOMMIT OFF
+    test=# \echo :AUTOCOMMIT
+    OFF
+
+
+ - зайти вторым ssh (вторая сессия)
+    - gcloud compute ssh pg-01 
+
+ - запустить везде psql из под пользователя postgres
+
+```
+# sudo su - postgres
+$ psql
+```
+
+для начала создать базу
+
+    postgres=# create database test;
+    CREATE DATABASE
+
+- сменить базу на тестовую. в обоих сессиях.
+
+    postgres=# \c test;
+    You are now connected to database "test" as user "postgres".
+
+- выключить auto commit
+
+    test=# \echo :AUTOCOMMIT
+    on
+    test=# \set AUTOCOMMIT OFF
+    test=# \echo :AUTOCOMMIT
+    OFF
+
+
+
+ - сделать в первой сессии новую таблицу и наполнить ее данными create table persons(id serial, first_name text, second_name text); insert into persons(first_name, second_name) values('ivan', 'ivanov'); insert into persons(first_name, second_name) values('petr', 'petrov'); commit;
+
+
+    test=# create table persons(id serial, first_name text, second_name text);
+    CREATE TABLE
+    test=*# insert into persons(first_name, second_name) values('ivan', 'ivanov');
+    INSERT 0 1
+    test=*# insert into persons(first_name, second_name) values('petr', 'petrov');
+    INSERT 0 1
+    test=*# commit;
+    COMMIT
+
+
+
+ - посмотреть текущий уровень изоляции: show transaction isolation level
+
+```
+test=# show transaction isolation level
+test-# ;
+ transaction_isolation 
+-----------------------
+ read committed
+(1 row)
+```
+
+    - чтобы отличать сессии между собой, изменим тест приглашения в psql, по умолчанию приглашение имеет вид:
+
+    \echo :PROMPT1
+    %/%R%x%# 
+
+    - изменим в первой сессии на 
+
+    \set PROMPT1 'S1: %/%R%x%# '
+
+    - во второй сессии
+
+    \set PROMPT1 'S2: %/%R%x%# '
+
+
+- начать новую транзакцию в обоих сессиях с дефолтным (не меняя) уровнем изоляции
+- в первой сессии добавить новую запись insert into persons(first_name, second_name) values('sergey', 'sergeev');
+
+```
+S1: test=*# insert into persons(first_name, second_name) values('sergey', 'sergeev');
+INSERT 0 1
+```
+
+- сделать select * from persons во второй сессии
+
+```
+S2: test=*# select * from persons ; 
+    id | first_name | second_name 
+----+------------+-------------
+    1 | ivan       | ivanov
+    2 | petr       | petrov
+(2 rows)
+```
+
+- видите ли вы новую запись и если да то почему?
+    - записи нет потому что во второй сессии уровень изоляции по-умолчанию read committed, а вставка в первой сессии не закомичена.
+
+- завершить первую транзакцию - commit;
+
+```
+S1: test=*# commit;
+COMMIT
+```
+
+- сделать select * from persons во второй сессии
+
+```
+S2: test=*# select * from persons ; 
+    id | first_name | second_name 
+----+------------+-------------
+    1 | ivan       | ivanov
+    2 | petr       | petrov
+    3 | sergey     | sergeev
+(3 rows)
+```
+
+
+- видите ли вы новую запись и если да то почему?
+    - да, потому что уровень изоляции в сессии 2 read committed, а коммит был.
+
+- завершите транзакцию во второй сессии
+
+```
+S2: test=*# commit;
+COMMIT
+```
+
+- начать новые но уже repeatable read транзации - set transaction isolation level repeatable read;
+
+```
+S1: test=# set transaction isolation level repeatable read;
+SET
+
+S2: test=# set transaction isolation level repeatable read;
+SET
+```
+
+- в первой сессии добавить новую запись insert into persons(first_name, second_name) values('sveta', 'svetova');
+
+```
+S1: test=*# insert into persons(first_name, second_name) values('sveta', 'svetova');
+INSERT 0 1
+```
+
+
+- сделать select * from persons во второй сессии
+
+```
+S2: test=*# select * from persons;
+    id | first_name | second_name 
+----+------------+-------------
+    1 | ivan       | ivanov
+    2 | petr       | petrov
+    3 | sergey     | sergeev
+(3 rows)
+```
+
+- видите ли вы новую запись и если да то почему?
+    - записи нет.
+
+- завершить первую транзакцию - commit;
+
+- сделать select * from persons во второй сессии
+
+```
+S2: test=*# select * from persons;
+id | first_name | second_name 
+----+------------+-------------
+1 | ivan       | ivanov
+2 | petr       | petrov
+3 | sergey     | sergeev
+(3 rows)
+```
+
+- видите ли вы новую запись и если да то почему?
+    - записи нет. т.к. уровень изоляции repeatable read, не допускает видеть изменные данные другими транзакциями которые начались позже чем текущая, в т.ч. закоммиченные.
+
+- завершить вторую транзакцию
+
+- сделать select * from persons во второй сессии
+- видите ли вы новую запись и если да то почему?
+    - Да, запись есть, т.к. на момент запроса/открытия транзакции в сессии 2, коммит для вставки записи 4 уже произошёл.
+
+```
+S2: test=# select * from persons;
+    id | first_name | second_name 
+----+------------+-------------
+    1 | ivan       | ivanov
+    2 | petr       | petrov
+    3 | sergey     | sergeev
+    4 | sveta      | svetova
+(4 rows)
+```
+
+
+- остановите виртуальную машину но не удаляйте ее
+    - 👍
