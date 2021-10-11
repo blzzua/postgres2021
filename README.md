@@ -1,1 +1,1 @@
-1. [ДЗ: Работа с уровнями изоляции транзакции в PostgreSQL](/main/homework01/README.md)
+1. [ДЗ: Работа с уровнями изоляции транзакции в PostgreSQL](/homework01/README.md)
