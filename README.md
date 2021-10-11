@@ -49,15 +49,17 @@ Ver Cluster Port Status Owner    Data directory              Log file
 ```
 
     - gcloud compute ssh pg-01 
+
  - запустить везде psql из под пользователя postgres
  - выключить auto commit
 
-    test=# \echo :AUTOCOMMIT
-    on
-    test=# \set AUTOCOMMIT OFF
-    test=# \echo :AUTOCOMMIT
-    OFF
-
+```
+test=# \echo :AUTOCOMMIT
+on
+test=# \set AUTOCOMMIT OFF
+test=# \echo :AUTOCOMMIT
+OFF
+```
 
  - зайти вторым ssh (вторая сессия)
     - gcloud compute ssh pg-01 
