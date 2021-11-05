@@ -80,6 +80,9 @@ sysctl -w  vm.vfs_cache_pressure=5 >> /etc/sysctl.conf
 
 Предположл что параметры shared_buffers и work_mem влияют на производительность при тестировании. Написал скрипты которые меняют  shared_buffers и work_mem в разнхы диапазонах и составляют результаы. 
 Эти тесты заняли 6 часов.
+![enter image description here](Selection_365.png)
+
+Среднее время в зависимости от параметров.
 ![enter image description here](Selection_378.png)
 
 
