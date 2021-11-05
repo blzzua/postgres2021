@@ -1,0 +1,217 @@
+root@pg-09-sysbench:~/sysbench-tpcc# ./tpcc.lua --pgsql-host=10.164.0.7  --pgsql-port=5432   --pgsql-user=sysbench --pgsql-password='sysbench' --pgsql-db='sysbench' --time=300 --threads=4 --report-interval=10 --tables=16 --scale=1 --db-driver=pgsql run 
+sysbench 1.0.20 (using bundled LuaJIT 2.1.0-beta2)
+
+Running the test with following options:
+Number of threads: 4
+Report intermediate results every 10 second(s)
+Initializing random number generator from current time
+
+
+Initializing worker threads...
+
+DB SCHEMA public
+DB SCHEMA public
+DB SCHEMA public
+DB SCHEMA public
+Threads started!
+
+[ 10s ] thds: 4 tps: 5.60 qps: 153.26 (r/w/o: 69.18/71.28/12.80) lat (ms,95%): 2405.65 err/s 0.20 reconn/s: 0.00
+[ 20s ] thds: 4 tps: 4.40 qps: 130.31 (r/w/o: 59.60/61.70/9.00) lat (ms,95%): 4203.93 err/s 0.10 reconn/s: 0.00
+[ 30s ] thds: 4 tps: 7.40 qps: 208.90 (r/w/o: 94.50/99.60/14.80) lat (ms,95%): 2198.52 err/s 0.00 reconn/s: 0.00
+[ 40s ] thds: 4 tps: 5.20 qps: 161.60 (r/w/o: 74.20/76.60/10.80) lat (ms,95%): 1903.57 err/s 0.20 reconn/s: 0.00
+[ 50s ] thds: 4 tps: 7.20 qps: 197.50 (r/w/o: 90.80/92.10/14.60) lat (ms,95%): 1771.29 err/s 0.10 reconn/s: 0.00
+[ 60s ] thds: 4 tps: 8.30 qps: 232.20 (r/w/o: 104.10/111.30/16.80) lat (ms,95%): 2405.65 err/s 0.10 reconn/s: 0.00
+[ 70s ] thds: 4 tps: 6.50 qps: 209.40 (r/w/o: 95.60/100.40/13.40) lat (ms,95%): 1803.47 err/s 0.20 reconn/s: 0.00
+[ 80s ] thds: 4 tps: 8.10 qps: 235.50 (r/w/o: 107.70/111.00/16.80) lat (ms,95%): 1678.14 err/s 0.40 reconn/s: 0.00
+[ 90s ] thds: 4 tps: 7.10 qps: 186.40 (r/w/o: 85.50/86.30/14.60) lat (ms,95%): 1589.90 err/s 0.30 reconn/s: 0.00
+[ 100s ] thds: 4 tps: 2.90 qps: 92.50 (r/w/o: 42.30/44.40/5.80) lat (ms,95%): 5312.73 err/s 0.00 reconn/s: 0.00
+[ 110s ] thds: 4 tps: 5.80 qps: 177.00 (r/w/o: 81.70/83.70/11.60) lat (ms,95%): 3841.98 err/s 0.20 reconn/s: 0.00
+[ 120s ] thds: 4 tps: 8.50 qps: 221.80 (r/w/o: 100.10/104.10/17.60) lat (ms,95%): 1376.60 err/s 0.30 reconn/s: 0.00
+^C
+root@pg-09-sysbench:~/sysbench-tpcc# ./tpcc.lua --pgsql-host=10.164.0.7  --pgsql-port=5432   --pgsql-user=sysbench --pgsql-password='sysbench' --pgsql-db='sysbench' --time=120 --threads=4 --report-interval=10 --tables=16 --scale=1 --db-driver=pgsql run   
+sysbench 1.0.20 (using bundled LuaJIT 2.1.0-beta2)
+
+Running the test with following options:
+Number of threads: 4
+Report intermediate results every 10 second(s)
+Initializing random number generator from current time
+
+
+Initializing worker threads...
+
+DB SCHEMA public
+DB SCHEMA public
+DB SCHEMA public
+DB SCHEMA public
+Threads started!
+
+[ 10s ] thds: 4 tps: 8.70 qps: 212.95 (r/w/o: 96.18/98.18/18.60) lat (ms,95%): 1304.21 err/s 0.10 reconn/s: 0.00
+[ 20s ] thds: 4 tps: 8.00 qps: 245.81 (r/w/o: 112.61/117.21/16.00) lat (ms,95%): 1479.41 err/s 0.10 reconn/s: 0.00
+[ 30s ] thds: 4 tps: 8.80 qps: 255.20 (r/w/o: 117.30/120.10/17.80) lat (ms,95%): 1708.63 err/s 0.10 reconn/s: 0.00
+[ 40s ] thds: 4 tps: 9.20 qps: 252.60 (r/w/o: 116.60/117.00/19.00) lat (ms,95%): 1678.14 err/s 0.40 reconn/s: 0.00
+[ 50s ] thds: 4 tps: 9.30 qps: 275.20 (r/w/o: 125.50/130.90/18.80) lat (ms,95%): 995.51 err/s 0.10 reconn/s: 0.00
+[ 60s ] thds: 4 tps: 8.80 qps: 234.70 (r/w/o: 108.20/108.90/17.60) lat (ms,95%): 1170.65 err/s 0.00 reconn/s: 0.00
+[ 70s ] thds: 4 tps: 9.00 qps: 222.20 (r/w/o: 101.60/102.40/18.20) lat (ms,95%): 1129.24 err/s 0.20 reconn/s: 0.00
+[ 80s ] thds: 4 tps: 10.60 qps: 321.50 (r/w/o: 147.00/153.10/21.40) lat (ms,95%): 1213.57 err/s 0.10 reconn/s: 0.00
+[ 90s ] thds: 4 tps: 11.80 qps: 328.60 (r/w/o: 148.90/155.90/23.80) lat (ms,95%): 1013.60 err/s 0.30 reconn/s: 0.00
+[ 100s ] thds: 4 tps: 14.20 qps: 400.50 (r/w/o: 182.90/188.80/28.80) lat (ms,95%): 787.74 err/s 0.30 reconn/s: 0.00
+[ 110s ] thds: 4 tps: 13.50 qps: 378.00 (r/w/o: 172.10/177.90/28.00) lat (ms,95%): 893.56 err/s 0.60 reconn/s: 0.00
+[ 120s ] thds: 4 tps: 15.50 qps: 449.30 (r/w/o: 204.70/213.20/31.40) lat (ms,95%): 773.68 err/s 0.40 reconn/s: 0.00
+SQL statistics:
+    queries performed:
+        read:                            16366
+        write:                           16867
+        other:                           2600
+        total:                           35833
+    transactions:                        1278   (10.62 per sec.)
+    queries:                             35833  (297.85 per sec.)
+    ignored errors:                      28     (0.23 per sec.)
+    reconnects:                          0      (0.00 per sec.)
+
+[ 10s ] thds: 16 tps: 32.99 qps: 1006.09 (r/w/o: 454.80/473.30/77.98) lat (ms,95%): 1427.08 err/s 3.80 reconn/s: 0.00
+[ 20s ] thds: 16 tps: 29.50 qps: 816.62 (r/w/o: 366.31/382.91/67.40) lat (ms,95%): 1506.29 err/s 4.20 reconn/s: 0.00
+[ 30s ] thds: 16 tps: 31.30 qps: 924.60 (r/w/o: 419.30/435.70/69.60) lat (ms,95%): 1453.01 err/s 3.70 reconn/s: 0.00
+[ 40s ] thds: 16 tps: 33.10 qps: 982.29 (r/w/o: 446.00/461.30/75.00) lat (ms,95%): 1352.03 err/s 4.50 reconn/s: 0.00
+[ 50s ] thds: 16 tps: 31.50 qps: 930.40 (r/w/o: 420.30/437.90/72.20) lat (ms,95%): 1533.66 err/s 5.00 reconn/s: 0.00
+[ 60s ] thds: 16 tps: 33.90 qps: 1094.20 (r/w/o: 497.90/518.10/78.20) lat (ms,95%): 1352.03 err/s 5.30 reconn/s: 0.00
+[ 70s ] thds: 16 tps: 44.10 qps: 1259.20 (r/w/o: 568.40/589.80/101.00) lat (ms,95%): 1129.24 err/s 6.70 reconn/s: 0.00
+[ 80s ] thds: 16 tps: 46.50 qps: 1378.69 (r/w/o: 626.20/643.90/108.60) lat (ms,95%): 1013.60 err/s 8.10 reconn/s: 0.00
+[ 90s ] thds: 16 tps: 47.00 qps: 1441.41 (r/w/o: 654.61/680.81/106.00) lat (ms,95%): 977.74 err/s 6.70 reconn/s: 0.00
+[ 100s ] thds: 16 tps: 51.60 qps: 1550.38 (r/w/o: 704.39/729.79/116.20) lat (ms,95%): 977.74 err/s 6.50 reconn/s: 0.00
+[ 110s ] thds: 16 tps: 53.40 qps: 1617.12 (r/w/o: 733.31/762.21/121.60) lat (ms,95%): 893.56 err/s 7.80 reconn/s: 0.00
+[ 120s ] thds: 16 tps: 62.80 qps: 1801.80 (r/w/o: 813.30/842.90/145.60) lat (ms,95%): 831.46 err/s 10.10 reconn/s: 0.00
+[ 130s ] thds: 16 tps: 62.40 qps: 1844.00 (r/w/o: 835.00/863.00/146.00) lat (ms,95%): 759.88 err/s 10.90 reconn/s: 0.00
+[ 140s ] thds: 16 tps: 69.30 qps: 2114.88 (r/w/o: 958.09/992.99/163.80) lat (ms,95%): 694.45 err/s 13.00 reconn/s: 0.00
+[ 150s ] thds: 16 tps: 74.90 qps: 2237.62 (r/w/o: 1015.31/1049.91/172.40) lat (ms,95%): 623.33 err/s 11.50 reconn/s: 0.00
+[ 160s ] thds: 16 tps: 80.00 qps: 2420.80 (r/w/o: 1095.60/1141.20/184.00) lat (ms,95%): 623.33 err/s 12.30 reconn/s: 0.00
+[ 170s ] thds: 16 tps: 79.10 qps: 2403.20 (r/w/o: 1086.90/1133.70/182.60) lat (ms,95%): 669.89 err/s 12.30 reconn/s: 0.00
+[ 180s ] thds: 16 tps: 91.30 qps: 2678.56 (r/w/o: 1214.68/1252.88/211.00) lat (ms,95%): 580.02 err/s 14.80 reconn/s: 0.00
+[ 190s ] thds: 16 tps: 97.00 qps: 2727.71 (r/w/o: 1235.90/1267.60/224.20) lat (ms,95%): 511.33 err/s 15.50 reconn/s: 0.00
+[ 200s ] thds: 16 tps: 101.60 qps: 3085.49 (r/w/o: 1405.30/1452.30/227.90) lat (ms,95%): 484.44 err/s 12.70 reconn/s: 0.00
+[ 210s ] thds: 16 tps: 88.90 qps: 2738.19 (r/w/o: 1244.70/1292.40/201.10) lat (ms,95%): 623.33 err/s 11.90 reconn/s: 0.00
+[ 220s ] thds: 16 tps: 30.00 qps: 872.51 (r/w/o: 395.71/409.81/67.00) lat (ms,95%): 1376.60 err/s 3.70 reconn/s: 0.00
+[ 230s ] thds: 16 tps: 32.10 qps: 992.90 (r/w/o: 452.60/468.70/71.60) lat (ms,95%): 1280.93 err/s 3.80 reconn/s: 0.00
+[ 240s ] thds: 16 tps: 43.30 qps: 1281.99 (r/w/o: 583.10/598.70/100.20) lat (ms,95%): 960.30 err/s 6.80 reconn/s: 0.00
+[ 250s ] thds: 16 tps: 41.80 qps: 1192.11 (r/w/o: 539.60/556.30/96.20) lat (ms,95%): 1032.01 err/s 6.30 reconn/s: 0.00
+[ 260s ] thds: 16 tps: 45.60 qps: 1358.30 (r/w/o: 618.00/636.50/103.80) lat (ms,95%): 943.16 err/s 6.60 reconn/s: 0.00
+[ 270s ] thds: 16 tps: 52.10 qps: 1523.61 (r/w/o: 688.30/711.10/124.20) lat (ms,95%): 831.46 err/s 10.20 reconn/s: 0.00
+[ 280s ] thds: 16 tps: 52.00 qps: 1638.29 (r/w/o: 745.90/773.00/119.40) lat (ms,95%): 846.57 err/s 8.20 reconn/s: 0.00
+[ 290s ] thds: 16 tps: 63.90 qps: 2017.00 (r/w/o: 918.50/953.50/145.00) lat (ms,95%): 694.45 err/s 8.80 reconn/s: 0.00
+[ 300s ] thds: 16 tps: 72.70 qps: 2319.90 (r/w/o: 1057.40/1097.70/164.80) lat (ms,95%): 634.66 err/s 10.30 reconn/s: 0.00
+SQL statistics:
+    queries performed:
+        read:                            228129
+        write:                           236285
+        other:                           38462
+        total:                           502876
+    transactions:                        16773  (55.85 per sec.)
+    queries:                             502876 (1674.43 per sec.)
+    ignored errors:                      2520   (8.39 per sec.)
+    reconnects:                          0      (0.00 per sec.)
+
+General statistics:
+    total time:                          300.3253s
+    total number of events:              16773
+
+Latency (ms):
+         min:                                    1.23
+         avg:                                  286.29
+         max:                                 7529.70
+         95th percentile:                      943.16
+         sum:                              4802014.93
+
+Threads fairness:
+    events (avg/stddev):           1048.3125/33.16
+    execution time (avg/stddev):   300.1259/0.10
+
+    
+
+    
+заметил следующие аномалии которые влияют на время выполнения:
+при увеличении количества потоков - множество дедлоков. 
+в каком-то смысле это нивелируется опцией --trx_level=RC которая понижает уровень изоляции для обновляющих операций (правда это приводит к некоторым )
+
+влияние кеширования операционной системой - очень сильное. скорость транзакций выросла от 5.6тпс до 250 при дефолтных настройках.
+это настолько много, что собственно настройки сервера нивелируются.
+Можно сбросить кеши операционной системы командой
+echo 1 > /proc/sys/vm/drop_caches
+
+но они потом накачаются снова, и снова прогретый кеш операционки будет выигрывать любые настройки постгрес-сервера, по сравнению с холодным но сконфигурированным. 
+
+Есть опция 
+https://www.kernel.org/doc/Documentation/sysctl/vm.txt ( vfs_cache_pressure ) - This percentage value controls the tendency of the kernel to reclaim the memory which is used for caching of directory and inode objects.
+выставил его в 5%
+sysctl -w  vm.vfs_cache_pressure=5 >> /etc/sysctl.conf
+
+
+но судя по графику наполенение кеша всеравно происходит, просто медленнее. так что вернул кеширование операционной системы в состояние по-умолчанию.
+
+еще хорошей стратегией будет сгенерировать данных в базе было настолько много, чтобы кеширование операционной системы не было способно держать существенную часть данных в оперативной памяти, чтобы данные постоянно вытеснялись на диск
+Однако это нужно хотябы данных хотя бы в 2-4 раза больше объема оперативной памяти, 8-16гб, однако подготовка среды тестирование у меня занимала очень много времени.
+
+написал скрипты которые гоняют тесты
+
+использовал пгтюн. 
+
+max_connections = 20
+shared_buffers = 1GB
+effective_cache_size = 3GB
+maintenance_work_mem = 256MB
+checkpoint_completion_target = 0.9
+wal_buffers = 16MB
+default_statistics_target = 100
+random_page_cost = 4
+effective_io_concurrency = 2
+work_mem = 52428kB
+min_wal_size = 64MB
+max_wal_size = 1GB
+max_worker_processes = 2
+max_parallel_workers_per_gather = 1
+max_parallel_workers = 2
+max_parallel_maintenance_workers = 1
+
+я указал весьма низкое значение max_connections, пгтюн предложил для олтп характера нагрузки очень высокое work_mem.
+провёл тесты на этом конфиге, получил катастрофически низкий результат. прогнал еще раз тест получил  
+
+написал скрипты которые меняют 
+shared_buffers и work_mem в разнхы диапазонах и составляют результаы. 
+эти тесты займут 6 часов.
+
+
+BASE_PG_TUNE_CONFIG=/root/script/03-pgtune.conf
+TEST_CONFIG=/root/script/04-test.conf
+cp -f $BASE_PG_TUNE_CONFIG $TEST_CONFIG
+
+reload_conf(){
+    PGPASSWORD=sysbench psql -h 127.0.0.1 -U sysbench -c 'select pg_reload_conf();'
+}
+
+restart_conf(){
+    systemctl restart postgresql@13-main.service
+}
+warm_caches(){
+    ssh 10.164.0.9 < run_warm_from_remote.sh | tee warm.txt
+    mv warm.txt /root/script/results/warm-$shared_buffers.txt 
+}
+
+
+for shared_buffers in 128 256 512 1024 2048
+do
+    echo "shared_buffers = ${shared_buffers}MB" > $TEST_CONFIG
+    restart_conf;
+    warm_caches
+
+    for work_mem in 16384 8192 4096 2048 512
+    do
+        echo "work_mem = ${work_mem}kB" >> $TEST_CONFIG
+        cp $TEST_CONFIG /etc/postgresql/13/main/conf.d/
+        reload_conf;
+        ssh 10.164.0.9 < run_test_from_remote.sh | tee  res.txt
+        mv res.txt /root/script/results/${shared_buffers}_mb_x_${work_mem}_kb.txt
+    done
+done
+
+run_test_from_remote.sh
+
+cd /root/sysbench-tpcc
+./tpcc.lua --pgsql-host=10.164.0.7  --pgsql-port=5432   --pgsql-user=sysbench --pgsql-password='sysbench' --pgsql-db='sysbench' --time=600 --threads=16 --report-interval=10 --tables=16 --scale=1 --trx_level=RC --db-driver=pgsql run
