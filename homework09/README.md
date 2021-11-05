@@ -78,7 +78,7 @@ sysctl -w  vm.vfs_cache_pressure=5 >> /etc/sysctl.conf
 Я указал весьма низкое значение max_connections, pgtune предложил для OLTP-характера нагрузки очень высокое work_mem.
 Провёл тесты на этом конфиге, получил катастрофически низкий результат. "не более 16 tps".
 
-Предположл что параметры shared_buffers и work_mem влияют на производительность при тестировании. ![Написал скрипты](scripts) которые меняют  shared_buffers и work_mem в разнхы диапазонах и составляют результаы. 
+Предположл что параметры shared_buffers и work_mem влияют на производительность при тестировании. ![Написал скрипты](scripts) которые меняют  shared_buffers и work_mem в разных диапазонах и составляют ![результы](data-pass1.csv). 
 Эти тесты заняли 6 часов.
 ![enter image description here](Selection_365.png)
 
