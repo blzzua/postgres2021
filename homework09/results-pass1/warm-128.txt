@@ -1,0 +1,73 @@
+Welcome to Ubuntu 20.04.3 LTS (GNU/Linux 5.11.0-1020-gcp x86_64)
+
+ * Documentation:  https://help.ubuntu.com
+ * Management:     https://landscape.canonical.com
+ * Support:        https://ubuntu.com/advantage
+
+  System information as of Thu Nov  4 20:53:56 UTC 2021
+
+  System load:  0.0               Processes:             119
+  Usage of /:   19.0% of 9.52GB   Users logged in:       1
+  Memory usage: 5%                IPv4 address for ens4: 10.164.0.9
+  Swap usage:   0%
+
+
+42 updates can be applied immediately.
+26 of these updates are standard security updates.
+To see these additional updates run: apt list --upgradable
+
+
+sysbench 1.0.20 (using bundled LuaJIT 2.1.0-beta2)
+
+Running the test with following options:
+Number of threads: 4
+Report intermediate results every 10 second(s)
+Initializing random number generator from current time
+
+
+Initializing worker threads...
+
+DB SCHEMA public
+DB SCHEMA public
+DB SCHEMA public
+DB SCHEMA public
+Threads started!
+
+[ 10s ] thds: 4 tps: 11.10 qps: 284.34 (r/w/o: 129.07/131.87/23.39) lat (ms,95%): 977.74 err/s 0.00 reconn/s: 0.00
+[ 20s ] thds: 4 tps: 12.10 qps: 343.31 (r/w/o: 157.81/161.31/24.20) lat (ms,95%): 893.56 err/s 0.00 reconn/s: 0.00
+[ 30s ] thds: 4 tps: 13.00 qps: 393.11 (r/w/o: 180.60/186.50/26.00) lat (ms,95%): 861.95 err/s 0.00 reconn/s: 0.00
+[ 40s ] thds: 4 tps: 12.50 qps: 387.49 (r/w/o: 176.70/185.80/25.00) lat (ms,95%): 759.88 err/s 0.10 reconn/s: 0.00
+[ 50s ] thds: 4 tps: 13.10 qps: 438.80 (r/w/o: 200.40/212.20/26.20) lat (ms,95%): 719.92 err/s 0.00 reconn/s: 0.00
+[ 60s ] thds: 4 tps: 18.30 qps: 489.20 (r/w/o: 221.40/231.20/36.60) lat (ms,95%): 612.21 err/s 0.00 reconn/s: 0.00
+[ 70s ] thds: 4 tps: 19.40 qps: 491.40 (r/w/o: 225.20/227.40/38.80) lat (ms,95%): 539.71 err/s 0.10 reconn/s: 0.00
+[ 80s ] thds: 4 tps: 20.40 qps: 565.30 (r/w/o: 257.50/267.00/40.80) lat (ms,95%): 511.33 err/s 0.10 reconn/s: 0.00
+[ 90s ] thds: 4 tps: 24.30 qps: 704.50 (r/w/o: 321.10/334.80/48.60) lat (ms,95%): 404.61 err/s 0.20 reconn/s: 0.00
+[ 100s ] thds: 4 tps: 24.50 qps: 657.90 (r/w/o: 296.30/312.60/49.00) lat (ms,95%): 450.77 err/s 0.00 reconn/s: 0.00
+[ 110s ] thds: 4 tps: 25.90 qps: 762.71 (r/w/o: 350.40/360.50/51.80) lat (ms,95%): 383.33 err/s 0.40 reconn/s: 0.00
+[ 120s ] thds: 4 tps: 30.80 qps: 868.09 (r/w/o: 394.50/412.00/61.60) lat (ms,95%): 344.08 err/s 0.30 reconn/s: 0.00
+SQL statistics:
+    queries performed:
+        read:                            29138
+        write:                           30254
+        other:                           4524
+        total:                           63916
+    transactions:                        2258   (18.79 per sec.)
+    queries:                             63916  (531.81 per sec.)
+    ignored errors:                      12     (0.10 per sec.)
+    reconnects:                          0      (0.00 per sec.)
+
+General statistics:
+    total time:                          120.1844s
+    total number of events:              2258
+
+Latency (ms):
+         min:                                    1.27
+         avg:                                  212.74
+         max:                                 3748.80
+         95th percentile:                      634.66
+         sum:                               480374.47
+
+Threads fairness:
+    events (avg/stddev):           564.5000/41.38
+    execution time (avg/stddev):   120.0936/0.05
+
