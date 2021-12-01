@@ -126,6 +126,7 @@ Time: 684075.375 ms (11:24.075)
 
 2.
 попытка использовать индексы по столбцам:
+(каждый индекс создается 20+минут)
 
 CREATE INDEX CONCURRENTLY  ind_trip_total ON taxi_trips (trip_total);
 CREATE INDEX CONCURRENTLY  ind_company ON taxi_trips (company);
@@ -158,11 +159,7 @@ make ;  make install
 shared_preload_libraries = 'cstore_fdw'
 рестарт.
 
-
--- load extension first time after install
 CREATE EXTENSION cstore_fdw;
-
--- create server object
 CREATE SERVER cstore_server FOREIGN DATA WRAPPER cstore_fdw;
 
 
@@ -205,3 +202,6 @@ CREATE INDEX CONCURRENTLY  ind_tips ON taxi_trips (tips);
 
 
 
+
+
+не забыть очистить бакет и остановить машину
