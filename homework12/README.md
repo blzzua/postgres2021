@@ -24,13 +24,12 @@
 В порядке обзора: рассмотрел bigquery-public-data chicago_taxi_trips
 
 сделал запросы, например:
-```
-SELECT count(1) as cnt_, sum(trip_total) as sum_total  , company, 
-    FROM `bigquery-public-data.chicago_taxi_trips.taxi_trips` 
-    GROUP BY company
-    order by 1 desc
-    limit 100;
-```
+>     SELECT count(1) as cnt_, sum(trip_total) as sum_total  , company, 
+>         FROM `bigquery-public-data.chicago_taxi_trips.taxi_trips` 
+>         GROUP BY company
+>         order by 1 desc
+>         limit 100;
+
 Это читает 5гб данные,  в зависимости от кеширования отрабатывает от нескольких секунд, до 1.8 сек.
 
 #### Загрузить в неё данные (10 Гб)
@@ -102,13 +101,11 @@ SELECT count(1) as cnt_, sum(trip_total) as sum_total  , company,
 
 т.к. загрузка занимает продолжительное время, порядка 30 сек файл с 630тыс записей,  я сделал truncate таблицы, и сформировал скрипт который зальет  все данные.
 
-```
-for file in /var/lib/postgresql/13/data/data*.csv; 
-do
-	echo -e "Processing $file file..."
-	psql -d taxi -c "\\COPY taxi_trips(unique_key, taxi_id, trip_start_timestamp, trip_end_timestamp, trip_seconds, trip_miles, pickup_census_tract, dropoff_census_tract, pickup_community_area, dropoff_community_area, fare, tips, tolls, extras, trip_total, payment_type, company, pickup_latitude, pickup_longitude, pickup_location, dropoff_latitude, dropoff_longitude, dropoff_location) FROM '$file' DELIMITER ',' CSV HEADER;"
-done
-```
+>     for file in /var/lib/postgresql/13/data/data*.csv; 
+>     do
+>     	echo -e "Processing $file file..."
+>     	psql -d taxi -c "\\COPY taxi_trips(unique_key, taxi_id, trip_start_timestamp, trip_end_timestamp, trip_seconds, trip_miles, pickup_census_tract, dropoff_census_tract, pickup_community_area, dropoff_community_area, fare, tips, tolls, extras, trip_total, payment_type, company, pickup_latitude, pickup_longitude, pickup_location, dropoff_latitude, dropoff_longitude, dropoff_location) FROM '$file' DELIMITER ',' CSV HEADER;"
+>     done
 
 в таком режиме скорость заливки примерно порядка 25 сек на файл 630тыс записей. 40 файлов = 25 млн записей.
 
@@ -116,18 +113,17 @@ done
 #### Описать что и как делали и с какими проблемами столкнулись.
 
 ##### Попытки работать с данными сразу-в-лоб:
-```
-taxi=# SELECT count(1) as cnt_, sum(trip_total) as sum_total  , company 
-    FROM taxi_trips 
-    GROUP BY company
-    order by 1 desc
-    limit 100;
-Time: 721295.932 ms (12:01.296)
-```
-```
-SELECT payment_type, round(sum(tips)/sum(trip_total)*100, 0) + 0 as tips_percent, count(*) as c FROM taxi_trips group by payment_type order by 3 limit 10;
-Time: 673418.743 ms (11:13.419)
-```
+>     taxi=# SELECT count(1) as cnt_, sum(trip_total) as sum_total  , company 
+>         FROM taxi_trips 
+>         GROUP BY company
+>         order by 1 desc
+>         limit 100;
+>     Time: 721295.932 ms (12:01.296)
+
+
+>     SELECT payment_type, round(sum(tips)/sum(trip_total)*100, 0) + 0 as tips_percent, count(*) as c FROM taxi_trips >     group by payment_type order by 3 limit 10;
+>     Time: 673418.743 ms (11:13.419)
+
 12 и 11:13 минут. по сути всё упирается в random-чтение с диска.
 
 попробуем ускорить?
@@ -325,24 +321,27 @@ explain не показал использование индекса, а тол
 #####  4. расширение cstore_fdw
 https://github.com/citusdata/cstore_fdw
 
-```git clone https://github.com/citusdata/cstore_fdw```
-согласно документации понадобится
-```sudo apt-get -y install protobuf-c-compiler libprotobuf-c-dev
-# проверка доступости pg_config в PATH
-which pg_config  
-sudo apt-get -y install make gcc
-# по факту ошибки  cstore_fdw.c:17:10: fatal error: postgres.h: No such file or directory
-sudo apt -y install postgresql-server-dev-13     
-```
+>     git clone https://github.com/citusdata/cstore_fdw
 
-```cd cstore_fdw
-make ;  make install 
+согласно документации понадобится
+>     sudo apt-get -y install protobuf-c-compiler libprotobuf-c-dev
+
+>     # проверка доступости pg_config в PATH
+>     which pg_config  
+sudo apt-get -y install make gcc
+>     # по факту ошибки  cstore_fdw.c:17:10: fatal error: postgres.h: No such file or directory
+>     sudo apt -y install postgresql-server-dev-13     
+
+непосредственно сборка:
+>     cd cstore_fdw
+>     make ;  make install 
 можно убедиться что расширение  cstore_fdw.so находится в  /usr/lib/postgresql/13/lib/cstore_fdw.so
-```
+
 добавляем в конфиг:
-```shared_preload_libraries = 'cstore_fdw'```
+>     shared_preload_libraries = 'cstore_fdw'
 рестарт.
 
+создаем расширение и таблицу в бд (по примеру из документации):
 
 >     CREATE EXTENSION cstore_fdw;
 >     CREATE SERVER cstore_server FOREIGN DATA WRAPPER cstore_fdw;
@@ -378,4 +377,19 @@ make ;  make install
 >     
 >     COPY taxi_trips_cs(unique_key, taxi_id, trip_start_timestamp, trip_end_timestamp, trip_seconds, trip_miles, pickup_census_tract, dropoff_census_tract, pickup_community_area, dropoff_community_area, fare, tips, tolls, extras, trip_total, payment_type, company, pickup_latitude, pickup_longitude, pickup_location, dropoff_latitude, dropoff_longitude, dropoff_location) 
 >     FROM '/var/lib/postgresql/13/data/data000000000000.csv' DELIMITER ',' CSV HEADER;
+
+заливаем всё. 
+ и проблуем
+>     taxi=# SELECT payment_type, round(sum(tips)/sum(trip_total)*100, 0) + 0 as tips_percent, count(*) as c FROM taxi_trips_cs group by payment_type order by 3 limit 10;
+>     (10 rows)
+>     
+>     Time: 11193.946 ms (00:11.194)
+**11! секунд**, с холодным кешом. 
+кеширование немного помогает: Time: 9163.143 ms (00:09.163)
+
+второй запрос:
+>     SELECT count(1) as cnt_, sum(trip_total) as sum_total  , company FROM taxi_trips_cs GROUP BY company order by 1 desc limit 100;
+>     Time: 8293.151 ms (00:08.293)
+8 сек тоже хороший результат. 
+
 
