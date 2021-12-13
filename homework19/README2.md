@@ -124,10 +124,10 @@
 
 
 
-ошибка: 
-
-alter table flights add book_ref character(6);
-update flights f set book_ref = tf.book_ref from ticket_flights tf where f.flight_id = tf.flight_id ; 
+#### ошибка 
+попытка партиционировать таблицу flights. 
+>     alter table flights add book_ref character(6);
+>     update flights f set book_ref = tf.book_ref from ticket_flights tf where f.flight_id = tf.flight_id ; 
 
 оказалось не все перелёты были забронированы через booking-таблицу, порядка 30% перелётов не учитывались в booking. С этой таблицей приедтся работать по-особенному. 
 
@@ -198,4 +198,7 @@ update flights f set book_ref = tf.book_ref from ticket_flights tf where f.fligh
 >      1        | 37848
 >      N        | 64279
 >     (5 rows)
+
+ошибка заключается в том, что таблица журнала полётов не наследует bookings, а наоборот, каждый полёт может содержать несколько booking-ов. поэтому в неё нельзя было добавлять поле. 
+Но я оставил эту деятельность в отчёте чтобы показать как можно выполнить многоуровневое декларативное разбиение таблицы на партиции.
 
