@@ -1,0 +1,254 @@
+есть кластер:
+root@pg-bench:/opt# su - postgres
+postgres@pg-bench:~$ pg_lsclusters 
+Ver Cluster Port Status Owner    Data directory              Log file
+14  main    5432 online postgres /var/lib/postgresql/14/main /var/log/postgresql/postgresql-14-main.log
+
+добавляем в него пользователей
+CREATE ROLE admin;
+ALTER ROLE admin WITH NOSUPERUSER INHERIT CREATEROLE CREATEDB LOGIN NOREPLICATION NOBYPASSRLS PASSWORD 'adminpass';
+CREATE ROLE postgres;
+ALTER ROLE postgres WITH SUPERUSER INHERIT CREATEROLE CREATEDB LOGIN REPLICATION BYPASSRLS PASSWORD 'postgrespass';
+CREATE ROLE replicator;
+ALTER ROLE replicator WITH NOSUPERUSER INHERIT NOCREATEROLE NOCREATEDB LOGIN REPLICATION NOBYPASSRLS PASSWORD 'replicatorpass';
+CREATE ROLE rewind_user;
+ALTER ROLE rewind_user WITH NOSUPERUSER INHERIT NOCREATEROLE NOCREATEDB LOGIN NOREPLICATION NOBYPASSRLS PASSWORD 'rewind_user_pass';
+
+
+устанавливаем патрони и добавляем конфиг:
+
+
+scope: single
+name: single0
+
+restapi:
+  listen: 0.0.0.0:8008
+  connect_address: 10.164.0.28:8008
+
+etcd:
+  hosts:
+  - etcd1.europe-central2-a:2379
+  - etcd2.europe-west3-c:2379
+  - etcd3.europe-west4-c:2379
+
+bootstrap:
+  dcs:
+    ttl: 30
+    loop_wait: 10
+    retry_timeout: 10
+    maximum_lag_on_failover: 1048576
+    postgresql:
+      use_pg_rewind: true
+      parameters:
+  initdb:  # Note: It needs to be a list (some options need values, others are switches)
+  - encoding: UTF8
+  - data-checksums
+
+  pg_hba:  # Add following lines to pg_hba.conf after running 'initdb'
+  - host replication replicator 127.0.0.1/32 md5
+  - host all all 0.0.0.0/0 md5
+  users:
+    admin:
+      password: adminpass
+      options:
+        - createrole
+        - createdb
+
+postgresql:
+  listen: 127.0.0.1:5432
+  connect_address: 10.164.0.28:5432
+  data_dir: /var/lib/postgresql/14/main
+  bin_dir: /usr/lib/postgresql/14/bin
+  config_dir: /etc/postgresql/14/main
+  pgpass: /tmp/pgpass0
+  authentication:
+    replication:
+      username: replicator
+      password: replicatorpass
+    superuser:
+      username: postgres
+      password: postgrespass
+    rewind:  # Has no effect on postgres 10 and lower
+      username: rewind_user
+      password: rewind_user_pass
+  parameters:
+    unix_socket_directories: '.'
+  pg_hba:  # Add following lines to pg_hba.conf after running 'initdb'
+  - host replication replicator 127.0.0.1/32 md5
+  - local   all             postgres                                peer
+  - local   all             all                                     peer
+  - host    all             all             127.0.0.1/32            scram-sha-256
+  - host    all             all             0.0.0.0/0               md5
+  - host    all             all             0.0.0.0/0               scram-sha-256
+  - host    all             all             ::1/128                 scram-sha-256
+  - local   replication     all                                     peer
+  - host    replication     all             127.0.0.1/32            scram-sha-256
+  - host    replication     all             ::1/128                 scram-sha-256
+
+watchdog: off
+
+tags:
+    nofailover: false
+    noloadbalance: false
+    clonefrom: false
+    nosync: false
+
+
+чем отличатеся от /opt/patroni/postgres0.yml
+etcd:
+  hosts:
+  - etcd1.europe-central2-a:2379
+  - etcd2.europe-west3-c:2379
+  - etcd3.europe-west4-c:2379
+
+postgresql:
+  listen: 127.0.0.1:5432
+  connect_address: 10.164.0.28:5432
+  data_dir: /var/lib/postgresql/14/main
+  bin_dir: /usr/lib/postgresql/14/bin
+  config_dir: /etc/postgresql/14/main
+
+
+
+# ошибки при развёртывании патрони
+
+pip3 install -r requirements.txt 
+# без них будет ошибка ModuleNotFoundError: No module named 'dateutil'  или куча разных любых.
+ 
+pip3 install psycopg2-binary
+# без него будет ошибка FATAL: Patroni requires psycopg2>=2.5.4, psycopg2-binary, or psycopg>=3.0
+
+FileNotFoundError: [Errno 2] No such file or directory: 'pg_controldata'
+нужно прописать 
+postgres.bin_dir: /usr/lib/postgresql/14/bin
+
+
+FileNotFoundError: [Errno 2] No such file or directory: '/var/lib/postgresql/14/main/postgresql.conf' -> '/var/lib/postgresql/14/main/postgresql.base.conf'
+/etc/postgresql/14/main/postgresql.conf
+нужно прописать:
+postgres.config_dir: /etc/postgresql/14/main
+
+
+
+
+
+юнит-файл: /opt/patroni/extras/startup-scripts/patroni.service
+
+# /etc/systemd/system/patroni.service
+[Unit]
+Description=Runners to orchestrate a high-availability PostgreSQL
+After=syslog.target network.target
+
+[Service]
+Type=simple
+
+User=postgres
+Group=postgres
+
+# Read in configuration file if it exists, otherwise proceed
+EnvironmentFile=-/etc/patroni_env.conf
+
+WorkingDirectory=~
+
+# Where to send early-startup messages from the server
+# This is normally controlled by the global default set by systemd
+#StandardOutput=syslog
+
+# Pre-commands to start watchdog device
+# Uncomment if watchdog is part of your patroni setup
+#ExecStartPre=-/usr/bin/sudo /sbin/modprobe softdog
+#ExecStartPre=-/usr/bin/sudo /bin/chown postgres /dev/watchdog
+
+# Start the patroni process
+ExecStart=/usr/bin/local/patroni /etc/patroni.yml
+
+# Send HUP to reload from patroni.yml
+ExecReload=/bin/kill -s HUP $MAINPID
+
+# only kill the patroni process, not it's children, so it will gracefully stop postgres
+KillMode=process
+
+# Give a reasonable amount of time for the server to start up/shut down
+TimeoutSec=30
+
+# Do not restart the service if it crashes, we want to manually inspect database on failure
+Restart=no
+
+[Install]
+WantedBy=multi-user.target
+
+
+
+
+
+
+
+# конфигурирование постгреса через etcd:
+копируем  секцию postgres.pg_hba  из /etc/patroni.yml 
+удаляем секцию из конфига, 
+
+/opt/patroni/patronictl -c /etc/patroni.yml edit-config
+
+рассказать про переменную среды окружения EIDTOR
+EDITOR=mcedit python3 /opt/patroni/patronictl.py -c /etc/patroni.yml edit-config
+
+добавляем туда секцию
+postgresql:
+  pg_hba:
+  - host replication replicator 127.0.0.1/32 md5
+  - local   all             postgres                                peer
+  - local   all             all                                     peer
+  - host    all             all             127.0.0.1/32            scram-sha-256
+  - host    all             all             0.0.0.0/0               md5
+  - host    all             all             0.0.0.0/0               scram-sha-256
+  - host    all             all             ::1/128                 scram-sha-256
+  - local   replication     all                                     peer
+  - host    replication     all             127.0.0.1/32            scram-sha-256
+  - host    replication     all             ::1/128                 scram-sha-256
+
+
+почему-то эти конфиги перегенерируются сразу. но если не прилетает -  рестартуем патрони.
+
+чтобы изменения применились в постгрес без рестарта патрони(если в конфиге изменения приехали)
+
+patronictl -c /etc/patroni.yml reload single single0 
+
+
+# переменные среды окружения 
+https://patroni.readthedocs.io/en/latest/ENVIRONMENT.html
+каждый раз мы выбираем конфиг как опцию. 
+
+в нем указано к какому етцд мы цепляемся
+это можно прописать так: 
+export PATRONI_ETCD_HOSTS="etcd1.europe-central2-a:2379,etcd2.europe-west3-c:2379,etcd3.europe-west4-c:2379"
+export PATRONI_SCOPE=signle
+
+root@pg-bench:~# patronictl -c /etc/patroni.yml list 
++---------+-------------+--------+---------+----+-----------+
+| Member  | Host        | Role   | State   | TL | Lag in MB |
++ Cluster: single (7055208747922831099) ---+----+-----------+
+| single0 | 10.164.0.28 | Leader | running | 10 |           |
++---------+-------------+--------+---------+----+-----------+
+root@pg-bench:~# patronictl  list 
++---------+-------------+--------+---------+----+-----------+
+| Member  | Host        | Role   | State   | TL | Lag in MB |
++ Cluster: single (7055208747922831099) ---+----+-----------+
+| single0 | 10.164.0.28 | Leader | running | 10 |           |
++---------+-------------+--------+---------+----+-----------+
+root@pg-bench:~# export PATRONI_SCOPE=otus 
+root@pg-bench:~# patronictl  list 
++--------+-------------+---------+---------+----+-----------+
+| Member | Host        | Role    | State   | TL | Lag in MB |
++ Cluster: otus (7054531535614542456) -----+----+-----------+
+| pg1    | 10.164.0.25 | Replica | running | 21 |         0 |
+| pg2    | 10.156.0.5  | Leader  | running | 21 |           |
++--------+-------------+---------+---------+----+-----------+
+
+
+
+patronictl -c /etc/patroni.yml 
+export PATRONI_CONFIGURATION=/etc/patroni.yml 
+
+теоретически должно было работать 
+patronictl list 
+но не работает.
