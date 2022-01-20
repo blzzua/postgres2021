@@ -246,9 +246,15 @@ root@pg-bench:~# patronictl  list
 
 
 
+каждый раз мы выбираем конфиг как опцию. 
 patronictl -c /etc/patroni.yml 
-export PATRONI_CONFIGURATION=/etc/patroni.yml 
+в нем указано к какому етцд мы цепляемся
+подводный камень:
+очевидный параметр
+# export PATRONI_CONFIGURATION=/etc/patroni.yml 
+но это неправильно. но не работает, ошибка страная AttributeError: 'str' object has no attribute 'items'
+потому что правильно так:
 
-теоретически должно было работать 
+export PATRONICTL_CONFIG_FILE=/etc/patroni.yml 
 patronictl list 
-но не работает.
+
