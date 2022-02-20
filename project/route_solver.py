@@ -63,6 +63,6 @@ def test_route_solver(n):
                     if (d < min_duration):
                         min_duration = d
                         best_route = (a1,a2,a3,a4)
-                    print("4:", best_route)
+                print("4:", best_route)
 
 test_route_solver(100)
